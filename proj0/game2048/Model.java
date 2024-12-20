@@ -137,7 +137,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++) {
+            Tile t = b.iterator().next();
+            if (t == null) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -147,7 +153,13 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0; i < size; i++) {
+            Tile t = b.iterator().next();;
+            if (t != null && t.value() == MAX_PIECE) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -159,6 +171,21 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        boolean isEmpty = emptySpaceExists(b);
+        if (isEmpty) {
+            int size = b.size();
+            int colAndRow = size / 2;
+            Tile colCurrent = b.iterator().next();
+            Tile colLast = b.iterator().next();
+            Tile rowCurrent = b.iterator().next();
+            Tile rowLast = b.iterator().next();
+            for (int i = 0; i < colAndRow; i++) {
+                for (int j = 0; j < colAndRow; j++) {
+                    current = b.tile(j, i);
+
+                }
+            }
+        }
         return false;
     }
 

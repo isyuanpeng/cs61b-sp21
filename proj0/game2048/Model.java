@@ -113,7 +113,55 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        // If two Tile objects are adjacent in the direction of motion and have
+        //     *    the same value, they are merged into one Tile of twice the original
+        //     *    value and that new value is added to the score instance variable
+        board.setViewingPerspective(side);
+        int size = board.size();
+        for (int c = 0; c < size; c++) {
+            int nextMergePos = 0;
+            for (int r = board.size() - 2; r >= 0; r--) {
+                Tile tile = board.tile(c, r);
+                if (tile == null) {
+                    continue;
+                }
 
+                int moveToRow = r;
+                for (int above = r + 1; above < size; above++) {
+                    Tile aboveTile = board.tile(c, above);
+                    if (aboveTile == null) {
+                        moveToRow = above;
+                    } else if (aboveTile.value() == tile.value() && above > nextMergePos) {
+                        moveToRow = above;
+                        nextMergePos = above;
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (moveToRow != r) {
+                    if (board.tile(c, moveToRow) != null) {
+                        board.move(c, moveToRow, tile);
+                        score += board.tile(c, moveToRow).value();
+                    } else {
+                        board.move(c, moveToRow, tile);
+                    }
+                    changed = true;
+                }
+            }
+
+        }
+//        for (int i = 0; i < board.size(); i++) {
+//            for (int j = 0; j < board.size(); j++) {
+//                Tile tile = board.tile(i, j);
+//                if (tile != null) {
+//                    board.move(i, 3, tile);
+//                }
+//            }
+//        }
+
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
@@ -139,10 +187,13 @@ public class Model extends Observable {
     public static boolean emptySpaceExists(Board b) {
         int size = b.size();
         for (int i = 0; i < size; i++) {
-            Tile t = b.iterator().next();
-            if (t == null) {
-                return true;
+            for (int j = 0; j < size; j++) {
+                Tile t = b.tile(i, j);
+                if (t == null) {
+                    return true;
+                }
             }
+
         }
         return false;
     }
@@ -155,9 +206,11 @@ public class Model extends Observable {
     public static boolean maxTileExists(Board b) {
         int size = b.size();
         for (int i = 0; i < size; i++) {
-            Tile t = b.iterator().next();;
-            if (t != null && t.value() == MAX_PIECE) {
-                return true;
+            for (int j = 0; j < size; j++) {
+                Tile t = b.tile(i, j);
+                if (t != null && t.value() == MAX_PIECE) {
+                    return true;
+                }
             }
         }
         return false;
@@ -170,20 +223,31 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
         boolean isEmpty = emptySpaceExists(b);
         if (isEmpty) {
-            int size = b.size();
-            int colAndRow = size / 2;
-            Tile colCurrent = b.iterator().next();
-            Tile colLast = b.iterator().next();
-            Tile rowCurrent = b.iterator().next();
-            Tile rowLast = b.iterator().next();
-            for (int i = 0; i < colAndRow; i++) {
-                for (int j = 0; j < colAndRow; j++) {
-                    current = b.tile(j, i);
+            return true;
+        }
 
+        int size = b.size();
+        Tile colCurrent;
+        Tile rowCurrent;
+        for (int i = 0; i < size; i++) {
+            Tile colLast = null;
+            Tile rowLast = null;
+            for (int j = 0; j < size; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
                 }
+                colCurrent = b.tile(i, j);
+                rowCurrent = b.tile(j, i);
+                if (colCurrent != null && colLast != null && (colCurrent.value() == colLast.value())) {
+                    return true;
+                }
+                if (rowCurrent != null && rowLast != null && (rowCurrent.value() == rowLast.value())) {
+                    return true;
+                }
+                colLast = colCurrent;
+                rowLast = rowCurrent;
             }
         }
         return false;

@@ -25,6 +25,11 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     @Override
+    public void modify(int index, T element) {
+        array[index] = element;
+    }
+
+    @Override
     public void addFirst(T item) {
         if (size == array.length) {
             resizeFirst(array.length * 2);

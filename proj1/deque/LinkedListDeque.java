@@ -87,6 +87,11 @@ public class LinkedListDeque<T> implements Deque<T> {
     }
 
     @Override
+    public void modify(int index, T item) {
+
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return null;
     }
